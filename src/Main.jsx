@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { getDocs } from 'firebase/firestore';
+import React, { useState } from 'react';
+import { db } from './firebase/firebase-config';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { ISSUES } from './constants/issues';
 
@@ -10,49 +11,47 @@ const initialState = {
 	resolved: 'no',
 	severity: 'minor',
 };
-const Main = ({ issuesRef, db }) => {
+const Main = () => {
+	// Issues Collection reference
+	const issuesRef = collection(db, ISSUES);
 	const [issue, setIssue] = useState(initialState);
 	const [issuesList, setIssuesList] = useState([]);
 
-	const loadItems = () => {
-		getDocs(issuesRef)
-			.then((snapshot) => {
-				let issues = [];
-				snapshot.docs.forEach((doc) => {
-					issues.push({ ...doc.data(), id: doc.id });
-				});
-				setIssuesList(issues);
-			})
-			.catch((error) => console.log(error));
-	};
+	onSnapshot(issuesRef, (snapshot) => {
+		snapshot.docChanges().forEach((change) => {
+			let issues = [];
+			if (change.type === 'added' || change.type === 'removed') {
+				if (issuesList.length !== snapshot.docs.length) {
+					snapshot.docs.map((doc) => issues.push({ ...doc.data(), id: doc.id }));
+					return setIssuesList(issues);
+				}
+			} else if (change.type === 'modified') {
+				// TODO: UPDATING LOGIC
+				return console.log(change.type.toUpperCase(), change.doc.data());
+			}
+		});
+	});
 
 	// Event Handlers
 	const onChangeHandler = (e) => {
 		setIssue({ ...issue, [e.target.id]: e.target.value });
 	};
 
-	const onSubmitHandler = async (e) => {
+	const onSubmitHandler = (e) => {
 		e.preventDefault();
 
 		if ((issue && !issue.description) || !issue) return;
-
-		try {
-			await addDoc(issuesRef, issue);
-			setIssue(initialState);
-		} catch (error) {
-			console.log(error);
-		}
+		addDoc(issuesRef, issue);
+		setIssue(initialState);
 	};
 
 	const onDeleteHandler = async (e) => {
 		e.preventDefault();
 		if (!e.target.id) return;
 		const issueDocRef = doc(db, ISSUES, e.target.id);
-		try {
-			await deleteDoc(issueDocRef);
-		} catch (error) {
-			console.log(error);
-		}
+		const updatedList = issuesList.filter((issue) => issue.id !== e.target.id);
+		setIssuesList(updatedList);
+		await deleteDoc(issueDocRef);
 	};
 
 	const onUpdatedResolved = async (e, issue) => {
@@ -67,15 +66,10 @@ const Main = ({ issuesRef, db }) => {
 		}
 	};
 
-	useEffect(() => {
-		loadItems();
-	}, []);
-
 	return (
 		<div>
 			<h2 className="section-subheading">Firebase Firestore Course</h2>
 			<h3 className="section-subheading">Issues List</h3>
-
 			<div className="results-div">
 				<table>
 					<thead className="highlight-cell">
