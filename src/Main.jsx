@@ -54,16 +54,12 @@ const Main = () => {
 		await deleteDoc(issueDocRef);
 	};
 
-	const onUpdatedResolved = async (e, issue) => {
+	const onUpdatedResolved = (e, issue) => {
 		if (!issue) return;
 		const updatedIssue = { ...issue, [e.target.id]: e.target.value };
 
 		const issueRef = doc(db, ISSUES, issue.id);
-		try {
-			await updateDoc(issueRef, updatedIssue);
-		} catch (error) {
-			console.log(error);
-		}
+		updateDoc(issueRef, updatedIssue);
 	};
 
 	return (
@@ -89,11 +85,7 @@ const Main = () => {
 										<td>{issue.severity}</td>
 										<td>{issue.description}</td>
 										<td>
-											<select
-												id="resolved"
-												value={issue.resolved}
-												onChange={(e) => onUpdatedResolved(e, issue)}
-											>
+											<select id="resolved" onChange={(e) => onUpdatedResolved(e, issue)}>
 												<option value="yes">yes</option>
 												<option value="no">no</option>
 											</select>
@@ -124,6 +116,7 @@ const Main = () => {
 							</td>
 							<td>
 								<input
+									value={issue.description}
 									className="textfield"
 									id="description"
 									type="text"
