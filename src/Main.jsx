@@ -45,9 +45,9 @@ const Main = () => {
 		if ((issue && !issue.description) || !issue) return;
 
 		try {
-			await addDoc(issuesRef, issue);
+			const { id } = await addDoc(issuesRef, issue);
 			setloading(true);
-			setIssuesList([...issuesList, issue]);
+			setIssuesList([...issuesList, { id, ...issue }]);
 			setIssue(initialState);
 			setloading(false);
 		} catch (error) {
