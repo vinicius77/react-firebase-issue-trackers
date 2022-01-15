@@ -1,0 +1,55 @@
+section .form {
+  margin-top: 30px;
+  padding: 5px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.register-form {
+  background-color: rgb(236, 236, 236);
+}
+
+.form-controls {
+  margin-top: 20px;
+}
+
+.form-controls input{
+  width: 100%;
+  padding: 8px;
+  outline: none;
+  margin-top: 8px;
+  border: 1px solid #efe;
+  border-radius: 4px
+}
+
+.button-container{
+  margin: 10px 0;
+  text-align: center;
+}
+
+.button-register{
+  padding: 10px 15px;
+  border-radius: 6px;
+  outline: none;
+  border: 1px solid #efe;
+  background-color: #000;
+  color: #efe;
+  cursor: pointer;
+  transition: 0.3s ease-in-out all;
+  font-size: 15px;
+}
+
+.button-register:hover{
+  transform: scale(1.05);
+}
+
+.error{
+  text-align: center;
+  color: red;
+  border: 1px solid red;
+  padding: 6px 0;
+  background-color: #ffb9b9;
+  margin-top: 11px;
+  border-radius: 4px;
+}
+
