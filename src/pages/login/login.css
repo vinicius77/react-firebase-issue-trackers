@@ -5,7 +5,7 @@ section .form {
   flex-direction: column;
 }
 
-.register-form {
+.login-form {
   background-color: rgb(236, 236, 236);
 }
 
@@ -27,7 +27,7 @@ section .form {
   text-align: center;
 }
 
-.button-register{
+.button-login{
   padding: 10px 15px;
   border-radius: 6px;
   outline: none;
@@ -41,7 +41,7 @@ section .form {
   padding: 10px 35px;
 }
 
-.button-register:hover{
+.button-login:hover{
   transform: scale(1.05);
 }
 

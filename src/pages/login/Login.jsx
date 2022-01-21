@@ -1,18 +1,17 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import { auth, db } from '../../firebase/firebase-config';
 import { USERS } from '../../constants/users';
-import { doc, setDoc, Timestamp } from 'firebase/firestore';
-import './register.css';
+import { updateDoc, doc } from 'firebase/firestore';
+import './login.css';
 import { useNavigate } from 'react-router-dom';
 
 const initialState = {
-	name: '',
 	email: '',
 	password: '',
 };
 
-const Register = () => {
+const Login = () => {
 	const navigate = useNavigate();
 	const [fields, setFields] = useState(initialState);
 	const [error, setError] = useState('');
@@ -26,30 +25,25 @@ const Register = () => {
 		e.preventDefault();
 		setError('');
 		setIsLoading(true);
-		const { name, email, password } = fields;
+		const { email, password } = fields;
 
-		if (!name || !email || !password) {
+		if (!email || !password) {
 			setIsLoading(false);
 			setError('All fields are required');
 			return;
 		}
 
 		try {
-			// creates the login account
-			const { user } = await createUserWithEmailAndPassword(auth, email, password);
-
-			const userRef = doc(db, USERS, user.uid);
-
-			const newUser = {
-				uid: user.uid,
-				email,
-				name,
-				createdAt: Timestamp.fromDate(new Date()),
+			// login into account
+			const result = await signInWithEmailAndPassword(auth, email, password);
+			const userRef = doc(db, USERS, result.user.uid);
+			const updatedUser = {
 				isOnline: true,
 			};
 
-			// creates the user also on users collection
-			await setDoc(userRef, newUser);
+			// updates the user also on users collection
+			await updateDoc(userRef, updatedUser);
+
 			setIsLoading(false);
 			setFields(initialState);
 
@@ -62,13 +56,9 @@ const Register = () => {
 	};
 
 	return (
-		<section className="register-form">
-			<h3>Create an account</h3>
+		<section className="login-form">
+			<h3>Log into your account</h3>
 			<form className="form">
-				<div className="form-controls">
-					<label htmlFor="name">Name</label>
-					<input value={fields.name || ''} type="text" name="name" onChange={onChangeHandler} />
-				</div>
 				<div className="form-controls">
 					<label htmlFor="email">Email</label>
 					<input value={fields.email || ''} type="email" name="email" onChange={onChangeHandler} />
@@ -86,8 +76,8 @@ const Register = () => {
 				{error && <span className="error">{error}</span>}
 
 				<div className="button-container">
-					<button className="button-register" onClick={onSubmitHandler} disabled={isLoading}>
-						Register{isLoading && 'ing ...'}
+					<button className="button-login" onClick={onSubmitHandler} disabled={isLoading}>
+						Login{isLoading && 'g in...'}
 					</button>
 				</div>
 			</form>
@@ -95,4 +85,4 @@ const Register = () => {
 	);
 };
 
-export default Register;
+export default Login;
