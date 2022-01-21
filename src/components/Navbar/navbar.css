@@ -16,3 +16,18 @@ nav a {
 nav div a {
   margin-right: 20px;
 }
+
+.logout-btn{
+  padding: 7px 21px;
+  background-color: #222;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.5s ease-in-out;
+}
+
+.logout-btn:hover{
+  transform: scale(1.2);
+}
