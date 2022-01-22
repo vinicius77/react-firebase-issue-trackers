@@ -4,16 +4,19 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
 import Register from './pages/register/Register';
 import Login from './pages/login/Login';
+import AuthProvider from './context/auth';
 
 const App = () => {
 	return (
 		<Router>
-			<Navbar />
-			<Routes>
-				<Route exact path="/" element={<Issues />} />
-				<Route path="/register" element={<Register />} />
-				<Route path="/login" element={<Login />} />
-			</Routes>
+			<AuthProvider>
+				<Navbar />
+				<Routes>
+					<Route exact path="/" element={<Issues />} />
+					<Route path="/register" element={<Register />} />
+					<Route path="/login" element={<Login />} />
+				</Routes>
+			</AuthProvider>
 		</Router>
 	);
 };

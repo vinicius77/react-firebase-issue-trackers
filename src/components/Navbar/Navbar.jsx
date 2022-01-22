@@ -4,9 +4,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { USERS } from '../../constants/users';
 import { auth, db } from '../../firebase/firebase-config';
 import './navbar.css';
+import { useContext } from 'react';
+import { AuthContext } from '../../context/auth';
 
 const Navbar = () => {
+	const { user } = useContext(AuthContext);
 	const navigate = useNavigate();
+
 	const onSignOutHandle = async () => {
 		try {
 			const userRef = doc(db, USERS, auth.currentUser.uid);
@@ -14,10 +18,7 @@ const Navbar = () => {
 				isOnline: false,
 			};
 
-			// updates the user also on users collection
 			await updateDoc(userRef, updatedUser);
-
-			// Signs Out
 			await signOut(auth);
 
 			navigate('/');
@@ -32,7 +33,7 @@ const Navbar = () => {
 				<Link to="/">Home</Link>
 			</h3>
 			<div>
-				{auth.currentUser ? (
+				{user ? (
 					<>
 						<Link to="/profile">Profile</Link>
 						<button className="logout-btn" onClick={onSignOutHandle}>
