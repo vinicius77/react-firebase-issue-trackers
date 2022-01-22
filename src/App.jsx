@@ -1,10 +1,11 @@
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Issues from './components/Issues/Issues';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
-import Register from './pages/register/Register';
-import Login from './pages/login/Login';
+import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import AuthProvider from './context/auth';
+import Login from './pages/login/Login';
+import Register from './pages/register/Register';
 
 const App = () => {
 	return (
@@ -12,7 +13,15 @@ const App = () => {
 			<AuthProvider>
 				<Navbar />
 				<Routes>
-					<Route exact path="/" element={<Issues />} />
+					<Route
+						exact
+						path="/"
+						element={
+							<PrivateRoute>
+								<Issues />
+							</PrivateRoute>
+						}
+					/>
 					<Route path="/register" element={<Register />} />
 					<Route path="/login" element={<Login />} />
 				</Routes>
