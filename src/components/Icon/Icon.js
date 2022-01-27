@@ -39,7 +39,6 @@ Icon.defaultProps = {
 
 Icon.propTypes = {
 	icon: PropTypes.string.isRequired,
-	style: PropTypes.shape(PropTypes.object),
 };
 
 export default Icon;

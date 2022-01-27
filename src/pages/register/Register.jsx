@@ -6,6 +6,7 @@ import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import './register.css';
 import { useNavigate } from 'react-router-dom';
 import AuthButton from '../../components/AuthButton/AuthButton';
+import SMSAuth from '../../components/SMSAuth/SMSAuth';
 
 const initialState = {
 	name: '',
@@ -18,6 +19,7 @@ const Register = () => {
 	const [fields, setFields] = useState(initialState);
 	const [error, setError] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
+	const [isSMS, setIsSMS] = useState(false);
 
 	const onChangeHandler = (e) => {
 		setFields({ ...fields, [e.target.name]: e.target.value });
@@ -63,7 +65,6 @@ const Register = () => {
 	};
 
 	/** Third Part Authentication */
-
 	const onGoogleSignIn = async (e) => {
 		e.preventDefault();
 
@@ -94,36 +95,60 @@ const Register = () => {
 
 	return (
 		<section className="register-form">
-			<h3>Create an account</h3>
-			<form className="form">
-				<div className="form-controls">
-					<label htmlFor="name">Name</label>
-					<input value={fields.name || ''} type="text" name="name" onChange={onChangeHandler} />
-				</div>
-				<div className="form-controls">
-					<label htmlFor="email">Email</label>
-					<input value={fields.email || ''} type="email" name="email" onChange={onChangeHandler} />
-				</div>
-				<div className="form-controls">
-					<label htmlFor="password">Password</label>
-					<input
-						value={fields.password || ''}
-						type="password"
-						name="password"
-						onChange={onChangeHandler}
-					/>
-				</div>
+			{!isSMS ? (
+				<>
+					<h3>Create an account</h3>
+					<form className="form">
+						<div className="form-controls">
+							<label htmlFor="name">Name</label>
+							<input value={fields.name || ''} type="text" name="name" onChange={onChangeHandler} />
+						</div>
+						<div className="form-controls">
+							<label htmlFor="email">Email</label>
+							<input
+								value={fields.email || ''}
+								type="email"
+								name="email"
+								onChange={onChangeHandler}
+							/>
+						</div>
+						<div className="form-controls">
+							<label htmlFor="password">Password</label>
+							<input
+								value={fields.password || ''}
+								type="password"
+								name="password"
+								onChange={onChangeHandler}
+							/>
+						</div>
 
-				{error && <span className="error">{error}</span>}
+						{error && <span className="error">{error}</span>}
 
-				<div className="button-container">
-					<button className="button-register" onClick={onSubmitHandler} disabled={isLoading}>
-						Register{isLoading && 'ing ...'}
-					</button>
-				</div>
+						<div className="button-container">
+							<button className="button-register" onClick={onSubmitHandler} disabled={isLoading}>
+								Register{isLoading && 'ing ...'}
+							</button>
+						</div>
 
-				<AuthButton provider="Google" onClick={onGoogleSignIn} icon={null} background="#fff" />
-			</form>
+						<AuthButton
+							provider="Google"
+							icon="google"
+							onClick={onGoogleSignIn}
+							background="#fff"
+						/>
+					</form>
+				</>
+			) : (
+				<SMSAuth />
+			)}
+
+			<AuthButton
+				provide="SMS"
+				icon="google"
+				onClick={() => setIsSMS(!isSMS)}
+				background="#02bd7e"
+				isSMS={isSMS}
+			/>
 		</section>
 	);
 };
