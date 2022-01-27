@@ -1,10 +1,11 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import React, { useState } from 'react';
 import { auth, db } from '../../firebase/firebase-config';
 import { USERS } from '../../constants/users';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import './register.css';
 import { useNavigate } from 'react-router-dom';
+import AuthButton from '../../components/AuthButton/AuthButton';
 
 const initialState = {
 	name: '',
@@ -61,6 +62,36 @@ const Register = () => {
 		}
 	};
 
+	/** Third Part Authentication */
+
+	const onGoogleSignIn = async (e) => {
+		e.preventDefault();
+
+		try {
+			const provider = new GoogleAuthProvider();
+			const result = await signInWithPopup(auth, provider);
+
+			// const credential = GoogleAuthProvider.credentialFromResult(result);
+			// const token = credential.accessToken;
+			const user = result.user;
+
+			const newUser = {
+				uid: user.uid,
+				email: user.email,
+				name: user.displayName,
+				createdAt: Timestamp.fromDate(new Date()),
+				isOnline: true,
+			};
+
+			const userRef = doc(db, USERS, user.uid);
+			await setDoc(userRef, newUser);
+
+			navigate('/');
+		} catch (error) {
+			setError(error.message);
+		}
+	};
+
 	return (
 		<section className="register-form">
 			<h3>Create an account</h3>
@@ -90,6 +121,8 @@ const Register = () => {
 						Register{isLoading && 'ing ...'}
 					</button>
 				</div>
+
+				<AuthButton provider="Google" onClick={onGoogleSignIn} icon={null} background="#fff" />
 			</form>
 		</section>
 	);
